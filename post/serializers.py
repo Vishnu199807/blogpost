@@ -5,6 +5,19 @@ from .models import Comment
 from django.contrib.auth.models import User
 from .models import BlogPost
 
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['id', 'content', 'author', 'created_at']
+
+class BlogPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BlogPost
+        fields = ['id', 'title', 'content', 'author', 'image', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'author', 'created_at', 'updated_at']
+
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
@@ -43,17 +56,3 @@ class BlogPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = BlogPost
         fields = '__all__'
-
-
-class CommentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Comment
-        fields = ['id', 'content', 'author', 'created_at']
-
-class BlogPostSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = BlogPost
-        fields = ['id', 'title', 'content', 'author', 'image', 'created_at', 'updated_at']
-        read_only_fields = ['id', 'author', 'created_at', 'updated_at']
-
-

@@ -2,7 +2,26 @@ from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group, Permission
 
+class Comment(models.Model):
+    content = models.TextField()
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    blog_post = models.ForeignKey('BlogPost', on_delete=models.CASCADE, related_name='comments')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return f"Comment by {self.author} on {self.blog_post.title}"
+
+class BlogPost(models.Model):
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    image = models.ImageField(upload_to='blog_post_images/')
+
+    def __str__(self):
+        return self.title
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -37,7 +56,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         verbose_name='groups',
         blank=True,
         help_text='The groups this user belongs to.',
-        related_name='customuser_groups',  # Use a unique related_name
+        related_name='customuser_groups',
         related_query_name='user'
     )
     user_permissions = models.ManyToManyField(
@@ -56,25 +75,3 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
-
-
-class Comment(models.Model):
-    content = models.TextField()
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    blog_post = models.ForeignKey('BlogPost', on_delete=models.CASCADE, related_name='comments')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f"Comment by {self.author} on {self.blog_post.title}"
-
-class BlogPost(models.Model):
-    title = models.CharField(max_length=200)
-    content = models.TextField()
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    image = models.ImageField(upload_to='blog_post_images/')
-
-    def __str__(self):
-        return self.title
